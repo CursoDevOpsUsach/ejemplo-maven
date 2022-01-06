@@ -28,6 +28,13 @@ pipeline {
                 }
             }
         }
+        stage("paso 4"){
+            steps {
+                script {
+                sh "echo 'Build .Jar!'"
+                }
+            }
+        }
     }
     post {
         always {
