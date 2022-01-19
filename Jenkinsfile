@@ -39,11 +39,25 @@ pipeline {
                 }
             }
         }
-        stage('sonar') {
-            withSonarQubeEnv(credentialsId: 'f225455e-ea59-40fa-8af7-08176e86507a', installationName: 'My SonarQube Server') {
-            sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar'
-            }
-        }
+       stage("Paso 4: Download and checkout"){
+           steps {
+               checkout(
+                   [$class: 'GitSCM',
+                   //Acá reemplazar por el nonbre de branch
+                   branches: [[name: "feature-sonar" ]],
+                   //Acá reemplazar por su propio repositorio
+                   userRemoteConfigs: [[url: 'https://github.com/CursoDevOpsUsach/ejemplo-maven.git']]])
+           }
+       }
+       stage("Paso 5: Análisis SonarQube"){
+           steps {
+               withSonarQubeEnv('sonarqube') {
+                   sh "echo 'Calling sonar Service in another docker container!'"
+                   // Run Maven on a Unix agent to execute Sonar.
+                   sh 'mvn clean verify -Dsonar.analysis.mode=org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar -Dsonar.projectKey= Taller-8-M3'
+               }
+           }
+       }
     }
     post {
         always {
